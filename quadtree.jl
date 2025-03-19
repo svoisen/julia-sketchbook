@@ -76,7 +76,6 @@ function subdivide!(node::QuadTreeNode{T, D}) where {T<:Real, D}
     h = node.boundary.height
     c = node.capacity
 
-    # TODO: Move data to children
     nw = Rect(x, y, w/2, h/2)
     node.children = [QuadTreeNode(nw, c, Vector{D}())]
 
@@ -88,6 +87,19 @@ function subdivide!(node::QuadTreeNode{T, D}) where {T<:Real, D}
 
     se = Rect(x + w/2, y + h/2, w/2, h/2)
     push!(node.children, QuadTreeNode(se, c, Vector{D}()))
+
+    # Move the data from the parent to the correct child
+    for item in node.data
+        for child in node.children
+            if contains(child.boundary, item)
+                push!(child.data, item)
+                break
+            end
+        end
+    end
+
+    # Empty the parent data
+    node.data = Vector{D}()
 end
 
 function insert!(node::QuadTreeNode{T, D}, data::D) where {T<:Real, D}
