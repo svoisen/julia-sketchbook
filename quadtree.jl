@@ -48,14 +48,39 @@ function contains(rect::Rect{T}, p::Point{T}) where T<:Real
     return contains(rect, p.x, p.y)
 end
 
+function contains(rect::Rect{T}, circle::Circle{T}) where T<:Real
+    return contains(rect, circle.center)
+end
+
 """
     intersects(a::Rect{T}, b::Rect{T}) where T<:Real
 
 Check if two rectangles intersect.
 """
-function intersect(a::Rect{T}, b::Rect{T}) where T<:Real
+function intersects(a::Rect{T}, b::Rect{T}) where T<:Real
     return !(a.x + a.width < b.x || a.y + a.height < b.y || 
              a.x > b.x + b.width || a.y > b.y + b.height)
+end
+
+"""
+Check if a circle intersects a rectangle.
+"""
+function intersects(rect::Rect{T}, circle::Circle{T}) where T<:Real
+    # Find the closest point on the rectangle to the center of the circle
+    closest_x = max(rect.x, min(circle.center.x, rect.x + rect.width))
+    closest_y = max(rect.y, min(circle.center.y, rect.y + rect.height))
+    
+    # Calculate the distance between the closest point and the center of the circle
+    distance_x = circle.center.x - closest_x
+    distance_y = circle.center.y - closest_y
+    
+    # If the distance is less than the radius, the circle and rectangle intersect
+    distance_squared = distance_x^2 + distance_y^2
+    return distance_squared <= circle.radius^2
+end
+
+function intersects(circle::Circle{T}, rect::Rect{T}) where T<:Real
+    return intersects(rect, circle)
 end
 
 mutable struct QuadTreeNode{T<:Real, D}
@@ -126,6 +151,71 @@ function insert!(node::QuadTreeNode{T, D}, data::D) where {T<:Real, D}
             insert!(child, data)
         end
     end
+end
+
+"""
+    query(node::QuadTreeNode{T, D}) where {T<:Real, D}
+
+Find the leaf node that contains the given point.
+"""
+function query(node::QuadTreeNode{T, D}, x::T, y::T) where {T<:Real, D}
+    if !contains(node.boundary, x, y)
+        return nothing
+    end
+
+    if isempty(node.children)
+        return node
+    end
+
+    for child in node.children
+        result = query(child, x, y)
+        if result !== nothing
+            return result
+        end
+    end
+
+    return nothing
+end
+
+"""
+Find the leaf nodes that intersect with a circle.
+"""
+function query(node::QuadTreeNode{T, D}, circle::Circle{T}) where {T<:Real, D}
+    nodes = Vector{QuadTreeNode{T, D}}()
+    query(node, circle, nodes)
+
+    return nodes
+end
+
+function query(node::QuadTreeNode{T, D}, circle::Circle{T}, results::Vector{QuadTreeNode{T, D}}) where {T<:Real, D}
+    if !intersects(node.boundary, circle)
+        return
+    end
+    
+    if isempty(node.children)
+        push!(results, node)
+        return
+    end
+
+    for child in node.children
+        query(child, circle, results)
+    end
+end
+
+function allleaves(node::QuadTreeNode{T, D}) where {T<:Real, D}
+    leaves = Vector{QuadTreeNode{T, D}}()
+    
+    # If this is a leaf node, add it to the result
+    if isempty(node.children)
+        push!(leaves, node)
+    else
+        # Otherwise, recursively collect leaves from all children
+        for child in node.children
+            append!(leaves, allleaves(child))
+        end
+    end
+    
+    return leaves
 end
 
 end
