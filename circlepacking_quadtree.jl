@@ -1,4 +1,8 @@
+include("geometry.jl")
+include("quadtree.jl")
+
 import Luxor as L
+import .Geometry as G
 import .QuadTree as Q
 
 """
@@ -15,24 +19,13 @@ Algorithm:
 6. Repeat steps 1-5 until the circles fill the space.
 """
 
-const WIDTH = 500.0
-const MAXRADIUS = 50.0
+const WIDTH = 400.0
+const MAXRADIUS = 40.0
 const K = 100
 
-boundary = Q.Rect{Float64}(0.0, 0.0, WIDTH, WIDTH)
-root = Q.QuadTreeNode(boundary, 8, Q.Circle{Float64}[])
-
-"""
-    disttocircle(x::Float64, y::Float64, circle::Circle)
-
-Calculate the distance of a point to a circle
-"""
-function disttocircle(x::Float64, y::Float64, circle::Q.Circle)
-    dx = x - circle.center.x
-    dy = y - circle.center.y
-
-    return sqrt(dx^2 + dy^2) - circle.radius
-end
+boundary = G.Rect{Float64}(0.0, 0.0, WIDTH, WIDTH)
+circles = Vector{G.Circle{Float64}}()
+root = Q.QuadTreeNode(boundary, 8, circles)
 
 """
     generatecircle()
@@ -48,15 +41,15 @@ function generatecircle()
         distance = Inf
         valid = true
 
-        testcircle = Q.Circle(Q.Point(x, y), MAXRADIUS * 2)
+        testcircle = G.Circle(G.Point(x, y), MAXRADIUS * 2)
         nodes = Q.query(root, testcircle)
-        # nodes = Q.allleaves(root)
+        # nodes = allleaves(root)
         circles = map(node -> node.data, nodes)
-        circles = isempty(circles) ? Q.Circle{Float64}[] : reduce(vcat, circles)
+        circles = isempty(circles) ? G.Circle{Float64}[] : reduce(vcat, circles)
 
         # Perform a linear search to find the distance to the nearest circle
         for circle in circles
-            d = disttocircle(x, y, circle)
+            d = G.disttocircle(x, y, circle)
             # If the point is in a circle it's invalid
             if d < 0.0
                 valid = false
@@ -73,7 +66,7 @@ function generatecircle()
         end
     end
 
-    return Q.Circle(Q.Point(bestx, besty), min(MAXRADIUS, bestdist))
+    return G.Circle(G.Point(bestx, besty), min(MAXRADIUS, bestdist))
 end
 
 for _ in 1:1000
