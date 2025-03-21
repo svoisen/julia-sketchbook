@@ -1,5 +1,10 @@
 include("splines.jl")
 
+"""
+Draw a single asemic character using a random plotting
+of points and fitting a Catmull-Rom spline to the points.
+"""
+
 using Luxor
 import ..Splines as S
 
