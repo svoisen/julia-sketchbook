@@ -11,7 +11,7 @@ function pointcloud(n::Int, minx::Float64=0., miny::Float64=0., maxx::Float64=40
     return [Luxor.randompoint(Point(minx, miny), Point(maxx, maxy)) for _ in 1:n]
 end
 
-function distributed_pointcloud(n::Int, k:Int=100, minx::Float64=0., miny::Float64=0., maxx::Float64=400., maxy::Float64=400.)
+function distributed_pointcloud(n::Int, k::Int=100, minx::Float64=0., miny::Float64=0., maxx::Float64=400., maxy::Float64=400.)
     points = Point[Luxor.randompoint(Point(minx, miny), Point(maxx, maxy))]
 
     for _ in 2:n

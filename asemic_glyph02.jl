@@ -1,6 +1,8 @@
 include("splines.jl")
+include("random.jl")
 
 using Luxor, DelaunayTriangulation
+import .Random as R
 
 width = 400.0
 height = 400.0
@@ -26,7 +28,7 @@ pt2vert(p) = (p.x, p.y)
 vert2pt(v) = Point(v[1], v[2])
 edge2pts(e) = (vert2pt(e[1]), vert2pt(e[2]))
 
-points = [Luxor.randompoint(Point(0., 0), Point(width, height)) for _ in 1:12]
+points = Random.distributed_pointcloud(8, 50, 20., 20., width - 40., height - 40.)
 vertices = map(pt2vert, points)
 triangulation = DelaunayTriangulation.triangulate(vertices)
 
