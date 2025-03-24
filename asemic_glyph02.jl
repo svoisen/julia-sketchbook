@@ -70,17 +70,84 @@ function generate_graph(points)
     return graph_edges
 end
 
+"""
+    get_endpoints(graph_edges)
+
+Given a set of graph edges, return the vertices that are only part of one edge.
+"""
+function get_endpoints(graph_edges)
+    vertex_count = Dict{Int, Int}()
+    for edge in graph_edges
+        vertex_count[edge.v1] = get(vertex_count, edge.v1, 0) + 1
+        vertex_count[edge.v2] = get(vertex_count, edge.v2, 0) + 1    
+    end
+
+    endpoints = [k for (k, v) in vertex_count if v == 1]
+    return endpoints
+end
+
+function traverse_graph(graph_edges, endpoints)
+    # Start at an endpoint
+    current_vertex = endpoints[rand(1:length(endpoints))]
+    visited_edges = Set{Edge}()
+    visited_vertices = Set{Int}()
+    push!(visited_vertices, current_vertex)
+
+    while true
+        # Find the next edge
+        next_edge = nothing
+        for edge in graph_edges
+            if edge.v1 == current_vertex || edge.v2 == current_vertex
+                next_edge = edge
+                break
+            end
+        end
+
+        # If we can't find the next edge, we're done
+        if next_edge === nothing
+            break
+        end
+
+        # If we've already visited the edge, we're done
+        if next_edge in visited_edges
+            break
+        end
+
+        # Otherwise, add the edge to the visited edges and move to the next vertex
+        push!(visited_edges, next_edge)
+        if next_edge.v1 == current_vertex
+            current_vertex = next_edge.v2
+        else
+            current_vertex = next_edge.v1
+        end
+        push!(visited_vertices, current_vertex)
+    end
+
+    return visited_edges, visited_vertices
+end
+
 function main()
     Drawing(width, height)
     background("white")
     setline(1)
 
-    for edge in generate_graph(points)
+    graph_edges = generate_graph(points)
+    endpoints = get_endpoints(graph_edges)
+    traversal_edges, traversal_vertices = traverse_graph(graph_edges, endpoints)
+    println(traversal_vertices)
+
+    for edge in graph_edges
         sethue("black")
         v1 = vertices[edge.v1]
         v2 = vertices[edge.v2]
         line(vert2pt(v1), vert2pt(v2))
         strokepath()
+    end
+
+    for endpoint in endpoints
+        sethue("red")
+        circle(vert2pt(vertices[endpoint]), 3, :fill)
+        text(string(endpoint), vert2pt(vertices[endpoint]) + Point(10, 5))
     end
 
     finish()
