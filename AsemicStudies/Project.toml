@@ -1,0 +1,14 @@
+name = "AsemicStudies"
+uuid = "7a1a49a4-4dde-4628-a617-6c9c694f9207"
+authors = ["Sean Voisen <sean@voisen.org>"]
+version = "0.1.0"
+
+[deps]
+Luxor = "ae8d54c2-7ccd-5906-9d76-62fc9837b5bc"
+Plotline = "1c2172fb-9280-4eae-bcc2-4d15666f2082"
+Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
+
+[compat]
+Luxor = "4.2.0"
+Plotline = "0.1.2"
+Revise = "3.7.3"
