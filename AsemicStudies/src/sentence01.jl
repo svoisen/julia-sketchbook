@@ -19,22 +19,36 @@ using Luxor, Plotline
 struct Glyph
     points::Vector{Point}
     width::Real
+    diacritic::Vector{Point}
 end
 
 struct Word
     points::Vector{Point}
+    diacritics::Vector{Vector{Point}}
     width::Real
 end
 
-function generate_glyph(origin::Point, width::Real, minheight::Real, maxheight::Real, polyfit::Bool = true)
+function generate_glyph_pts(origin::Point, width::Real, minheight::Real, maxheight::Real, shouldpolyfit::Bool = true)
     b = (minheight + rand() * (maxheight - minheight)) / 2.0
     pts = distpointsinellipse(rand(3:6), origin, width / 2.0, b)
 
-    if polyfit
+    if shouldpolyfit
+        # Fit the points using a B-spline
         return polyfit(Vector{Point}(pts), 10)
     end
 
     return pts
+end
+
+function generate_diacritic(upper_y::Real, lower_y::Real)
+    y = upper_y - 5
+    return [
+        Point(-10 + rand(-3:3), y),
+        Point(-5, y - 5),
+        Point(0, y - 10 + rand(-3:3)),
+        Point(5, y - 5),
+        Point(10 + rand(-3:3), y)
+    ]
 end
 
 """
@@ -49,21 +63,30 @@ function generate_random_word(origin::Point, length::Int, glyph_map::Dict{Char, 
     chars = rand('a':'z', length)
     xpos = origin.x
     points = Vector{Point}()
+    diacritics = Vector{Vector{Point}}()
+
     for c in chars
         glyph = glyph_map[c]
+        if !isempty(glyph.diacritic)
+            push!(diacritics, map(p -> Point(p.x + xpos, p.y), glyph.diacritic))
+        end
         points = vcat(points, map(p -> Point(p.x + xpos, p.y), glyph.points))
-        xpos += glyph_width
+        xpos += glyph.width
     end
 
-    return Word(points, xpos - origin.x)
+    return Word(points, diacritics, xpos - origin.x)
 end
 
 function create_glyph_map(width::Real = 50, minheight::Real = 20, maxheight::Real = 150)
     glyph_map = Dict{Char, Glyph}()
     for c in 'a':'z'
+        points = generate_glyph_pts(O, 50, minheight, maxheight, true)
+        min_y = minimum(p.y for p in points)
+        max_y = maximum(p.y for p in points)
         glyph_map[c] = Glyph(
-            generate_glyph(Point(0, 0), 50, minheight, maxheight),
-            width
+            points,
+            width,
+            rand() > 0.8 ? generate_diacritic(min_y, max_y) : Vector{Point}(),
         )
     end
     return glyph_map
@@ -89,6 +112,9 @@ canvas_width = 800.0
     for _ in 1:2
         word = generate_random_word(Point(xpos, 0), rand(2:8), glyph_map)
         poly(catmullromspline(word.points), :stroke) 
+        for diacritic in word.diacritics
+            poly(catmullromspline(diacritic), :stroke)
+        end
         global xpos = xpos + word.width + space_width
     end
 
