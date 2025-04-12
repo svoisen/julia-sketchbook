@@ -80,7 +80,7 @@ end
 function create_glyph_map(width::Real = 50, minheight::Real = 20, maxheight::Real = 150)
     glyph_map = Dict{Char, Glyph}()
     for c in 'a':'z'
-        points = generate_glyph_pts(O, 50, minheight, maxheight, true)
+        points = generate_glyph_pts(O, width, minheight, maxheight, true)
         min_y = minimum(p.y for p in points)
         max_y = maximum(p.y for p in points)
         glyph_map[c] = Glyph(
