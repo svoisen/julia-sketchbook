@@ -1,0 +1,8 @@
+[deps]
+ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
+ImageBinarization = "cbc4b850-ae4b-5111-9e64-df94c024a13d"
+ImageMorphology = "787d08f9-d448-5407-9aad-5290dd7ab264"
+Images = "916415d5-f1e6-5110-898d-aaa5f9f070e0"
+Luxor = "ae8d54c2-7ccd-5906-9d76-62fc9837b5bc"
+Plotline = "1c2172fb-9280-4eae-bcc2-4d15666f2082"
+Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
