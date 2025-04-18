@@ -1,8 +1,15 @@
+name = "VectorizeWriting"
+authors = ["Sean Voisen <sean@voisen.org>"]
+version = "0.1.0"
+
 [deps]
 ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
+GeoInterface = "cf35fbd7-0cd7-5166-be24-54bfbe79505f"
+GeometryOps = "3251bfac-6a57-4b6d-aa61-ac1fef2975ab"
 ImageBinarization = "cbc4b850-ae4b-5111-9e64-df94c024a13d"
 ImageMorphology = "787d08f9-d448-5407-9aad-5290dd7ab264"
 Images = "916415d5-f1e6-5110-898d-aaa5f9f070e0"
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 Luxor = "ae8d54c2-7ccd-5906-9d76-62fc9837b5bc"
 Plotline = "1c2172fb-9280-4eae-bcc2-4d15666f2082"
 Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
