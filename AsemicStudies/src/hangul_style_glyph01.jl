@@ -1,9 +1,5 @@
-include("splines.jl")
-include("random.jl")
-
-using Luxor, DelaunayTriangulation
+using Luxor, DelaunayTriangulation, Plotline
 import .Random as R
-import .Splines as S
 
 width = 400.0
 height = 400.0
@@ -156,7 +152,7 @@ function draw_stroke_spline(stroke)
         points...,
         points[end] + (points[end] - points[end-1])
     ]
-    S.catmullromspline(extended_points, 20)
+    catmullromspline(extended_points, 20)
 end
 
 """
