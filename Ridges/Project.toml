@@ -1,0 +1,7 @@
+[deps]
+CatmullRom = "5b5b35a2-003c-5b99-bc04-a964994dd816"
+GeoInterface = "cf35fbd7-0cd7-5166-be24-54bfbe79505f"
+GeometryBasics = "5c1252a2-5f33-56bf-86c9-59e7332b4326"
+GeometryOps = "3251bfac-6a57-4b6d-aa61-ac1fef2975ab"
+Luxor = "ae8d54c2-7ccd-5906-9d76-62fc9837b5bc"
+Plotline = "1c2172fb-9280-4eae-bcc2-4d15666f2082"
