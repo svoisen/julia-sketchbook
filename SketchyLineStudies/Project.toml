@@ -1,0 +1,4 @@
+[deps]
+CatmullRom = "5b5b35a2-003c-5b99-bc04-a964994dd816"
+Luxor = "ae8d54c2-7ccd-5906-9d76-62fc9837b5bc"
+Plotline = "1c2172fb-9280-4eae-bcc2-4d15666f2082"
